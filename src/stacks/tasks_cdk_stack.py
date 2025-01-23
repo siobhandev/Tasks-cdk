@@ -3,7 +3,8 @@ from aws_cdk import (
     Stack,
     aws_iam as iam,
     aws_lambda as lambda_,
-    aws_apigateway as apigateway
+    aws_apigateway as apigateway,
+    aws_dynamodb as dynamodb
 )
 
 
@@ -40,6 +41,16 @@ class TasksCdkStack(Stack):
                     effect=iam.Effect.ALLOW
                 )
             ]
+        )
+
+        dynamodb.Table(self,
+            id="TasksTable",
+            table_name="TasksTable",
+            partition_key=dynamodb.Attribute(
+                name="taskId",
+                type=dynamodb.AttributeType.STRING,
+            ),
+            billing_mode=BillingMode.PAY_PER_REQUEST
         )
 
         api_crud_tasks = apigateway.RestApi(self, id="CRUD TASKS",
