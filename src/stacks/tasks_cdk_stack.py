@@ -43,14 +43,13 @@ class TasksCdkStack(Stack):
             ]
         )
 
-        dynamodb.Table(self,
-            id="TasksTable",
+        dynamodb.Table(self,"TasksTable",
             table_name="TasksTable",
             partition_key=dynamodb.Attribute(
                 name="taskId",
-                type=dynamodb.AttributeType.STRING,
+                type=dynamodb.AttributeType.STRING
             ),
-            billing_mode=BillingMode.PAY_PER_REQUEST
+            stream=dynamodb.StreamViewType.NEW_IMAGE
         )
 
         api_crud_tasks = apigateway.RestApi(self, id="CRUD TASKS",
