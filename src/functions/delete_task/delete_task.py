@@ -13,7 +13,7 @@ table = dynamodb.Table(table_name)
 def handler(event, context):
     print("Event", event)
     try:
-        if event['httpMethod'] != 'GET':
+        if event['httpMethod'] != 'DELETE':
             return generate_response(405, f'Method {event["httpMethod"]} not allowed')
         
         task_id = event["pathParameters"]["taskId"]
