@@ -27,7 +27,7 @@ def lambda_handler(event, context):
 
 def update_item(task_id, body):
     response = table.update_item(
-        key ={
+        Key={
             "taskId": task_id
         },
         UpdateExpression="SET title = :title, description = :description, status = :status",
