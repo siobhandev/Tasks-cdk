@@ -73,6 +73,18 @@ class TasksCdkStack(Stack):
         get_task.role.attach_inline_policy(politica_lambda_access_ssm)
         get_task.role.attach_inline_policy(politica_lambda_access_dynamodb)
 
+        update_task = lambda_.Function(
+            self,
+            id="update_task_lambda",
+            description="Update task",
+            function_name='update_task',
+            runtime=lambda_.Runtime.PYTHON_3_8,
+            handler="put_task.lambda_handler",
+            code=lambda_.Code.from_asset("src/functions/put_task"),
+        )
+
+        update_task.role.attach_inline_policy(politica_lambda_access_ssm)
+        update_task.role.attach_inline_policy(politica_lambda_access_dynamodb)
         
         api_crud_tasks.root.add_resource('POST').add_resource('tasks').add_method('POST', 
             apigateway.LambdaIntegration(create_task),
@@ -83,4 +95,10 @@ class TasksCdkStack(Stack):
             apigateway.LambdaIntegration(get_task),
             method_responses=[apigateway.MethodResponse(status_code="200")]
         )
+
+        api_crud_tasks.root.add_resource('PUT').add_resource('tasks').add_resource('{taskId}').add_method('PUT', 
+            apigateway.LambdaIntegration(update_task),
+            method_responses=[apigateway.MethodResponse(status_code="200")]
+        )
+
 
