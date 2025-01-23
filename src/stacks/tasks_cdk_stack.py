@@ -73,12 +73,14 @@ class TasksCdkStack(Stack):
         get_task.role.attach_inline_policy(politica_lambda_access_ssm)
         get_task.role.attach_inline_policy(politica_lambda_access_dynamodb)
 
-        api_crud_tasks.root.add_resource('tasks').add_method('POST', 
+        task_resource = api_crud_tasks.root.add_resource('tasks')
+        task_resource.add_method('POST', 
             apigateway.LambdaIntegration(create_task),
             method_responses=[apigateway.MethodResponse(status_code="201")]
         )
 
-        api_crud_tasks.root.add_resource('tasks').add_resource('{taskId}').add_method('GET', 
+        task_id_resource = task_resource.add_resource('{taskId}')
+        task_id_resource.add_method('GET', 
             apigateway.LambdaIntegration(get_task),
             method_responses=[apigateway.MethodResponse(status_code="200")]
         )
