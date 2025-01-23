@@ -78,8 +78,8 @@ class TasksCdkStack(Stack):
             method_responses=[apigateway.MethodResponse(status_code="201")]
         )
 
-        api_crud_tasks.root.add_resource('tasks').add_resource('{taskId}').add_method('GET', 
-            apigateway.LambdaIntegration(create_task),
-            method_responses=[apigateway.MethodResponse(status_code="201")]
+        api_crud_tasks.root.add_resource('{taskId}').add_method('GET', 
+            apigateway.LambdaIntegration(get_task),
+            method_responses=[apigateway.MethodResponse(status_code="200")]
         )
 
