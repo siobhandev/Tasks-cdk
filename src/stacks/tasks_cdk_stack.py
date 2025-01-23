@@ -86,6 +86,19 @@ class TasksCdkStack(Stack):
         update_task.role.attach_inline_policy(politica_lambda_access_ssm)
         update_task.role.attach_inline_policy(politica_lambda_access_dynamodb)
         
+        delete_task = lambda_.Function(
+            self,
+            id="delete_task_lambda",
+            description="Delete task",
+            function_name='delete_task',
+            runtime=lambda_.Runtime.PYTHON_3_8,
+            handler="delete_task.lambda_handler",
+            code=lambda_.Code.from_asset("src/functions/delete_task"),
+        )
+
+        delete_task.role.attach_inline_policy(politica_lambda_access_ssm)
+        delete_task.role.attach_inline_policy(politica_lambda_access_dynamodb)
+
         api_crud_tasks.root.add_resource('POST').add_resource('tasks').add_method('POST', 
             apigateway.LambdaIntegration(create_task),
             method_responses=[apigateway.MethodResponse(status_code="201")]
@@ -99,6 +112,11 @@ class TasksCdkStack(Stack):
         api_crud_tasks.root.add_resource('PUT').add_resource('tasks').add_resource('{taskId}').add_method('PUT', 
             apigateway.LambdaIntegration(update_task),
             method_responses=[apigateway.MethodResponse(status_code="200")]
+        )
+
+        api_crud_tasks.root.add_resource('DELETE').add_resource('tasks').add_resource('{taskId}').add_method('DELETE', 
+            apigateway.LambdaIntegration(delete_task),
+            method_responses=[apigateway.MethodResponse(status_code="204")]
         )
 
 

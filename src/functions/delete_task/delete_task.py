@@ -13,25 +13,24 @@ table = dynamodb.Table(table_name)
 def handler(event, context):
     print("Event", event)
     try:
-        if event['httpMethod'] != 'DELETE':
+        if event['httpMethod'] != 'GET':
             return generate_response(405, f'Method {event["httpMethod"]} not allowed')
         
         task_id = event["pathParameters"]["taskId"]
 
-        item = get_item(task_id)
-        return generate_response(200, item)
+        delete_item(task_id)
+        return generate_response(204, 'No Content')
     except Exception as e:
             print("Error", e)
             return generate_response(500, f'Internal server error {e}')
 
 
-def get_item(pk):
-    response = table.get_item(
+def delete_item(pk):
+    response = table.delete_item(
         Key={
             'taskId': pk,
         }
     )
-    return response.get('Item', {})
 
 
 def generate_response(status_code, body):
