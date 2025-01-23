@@ -30,14 +30,11 @@ def update_item(task_id, body):
         key ={
             "taskId": task_id
         },
-        UpdateExpression="SET title = :title, description = :description, #st = :status",
+        UpdateExpression="SET title = :title, description = :description, status = :status",
         ExpressionAttributeValues={
             ":title": body['title'],
             ":description": body['description'],
-            ":status": status
-        },
-        ExpressionAttributeName={
-            "#st": "status"
+            ":status": body['status']
         },
         ReturnValues="ALL_NEW"
     )
