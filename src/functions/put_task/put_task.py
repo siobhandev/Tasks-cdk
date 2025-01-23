@@ -37,7 +37,7 @@ def update_item(task_id, body):
             ":status": body['status']
         },
         ExpressionAttributeNames={
-            "#ts": "timestamp"
+            "#ts": "status"
         },
         ReturnValues="ALL_NEW"
     )
