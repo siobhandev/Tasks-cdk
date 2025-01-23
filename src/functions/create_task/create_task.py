@@ -1,5 +1,15 @@
 import json
 import uuid
+import boto3
+
+ssm_client = boto3.client('ssm')
+
+def get_table_name():
+    return ssm_client.get_parameter(Name='cdk_table_name', WithDecryption=True)["Parameter"]["Value"]
+
+dynamodb = boto3.resource('dynamodb')
+table_name = get_table_name()
+table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
     try:
@@ -14,7 +24,7 @@ def lambda_handler(event, context):
 
         response = create_item(title, description, status)
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            generate_response(200, 'Ok')
+            generate_response(201, 'Created')
 
     except Exception as e:
         return generate_response(500, f'Internal Server Error {e}')

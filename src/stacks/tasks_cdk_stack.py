@@ -1,8 +1,9 @@
 from constructs import Construct
 from aws_cdk import (
     Stack,
+    aws_iam as iam,
     aws_lambda as lambda_,
-    aws_iam as iam
+    aws_apigateway as apigateway
 )
 
 
@@ -26,7 +27,26 @@ class TasksCdkStack(Stack):
                 )
             ]
         )
+        
+        politica_lambda_access_dynamodb = iam.Policy(
+            self,
+            "lambda_access_dynamodb",
+            statements=[
+                iam.PolicyStatement(
+                    resources=["*"],
+                    actions=[
+                        "dynamodb:*"
+                    ],
+                    effect=iam.Effect.ALLOW
+                )
+            ]
+        )
 
+        api_crud_tasks = apigateway.RestApi(self, id="CRUD TASKS",
+            rest_api_name="crud_api",
+            description="Esta API Contendrá los endpoints de Tasks"
+        )
+        
         create_task = lambda_.Function(
             self,
             id="create_task_lambda",
@@ -35,4 +55,12 @@ class TasksCdkStack(Stack):
             runtime=lambda_.Runtime.PYTHON_3_8,
             handler="create_task.lambda_handler",
             code=lambda_.Code.from_asset("src/functions/create_task"),
+        )
+
+        create_task.role.attach_inline_policy(politica_lambda_access_ssm)
+        create_task.role.attach_inline_policy(politica_lambda_access_dynamodb)
+
+        api_crud_tasks.root.add_resource('tasks').add_method('POST', 
+            apigateway.LambdaIntegration(create_task),
+            method_responses=[apigateway.MethodResponse(status_code="201")]
         )
