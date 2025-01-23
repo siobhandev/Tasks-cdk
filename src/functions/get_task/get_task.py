@@ -10,7 +10,7 @@ dynamodb = boto3.resource('dynamodb')
 table_name = get_table_name()
 table = dynamodb.Table(table_name)
 
-def handler(event, context):
+def lambda_handler(event, context):
     print("Event", event)
     try:
         if event['httpMethod'] != 'GET':
