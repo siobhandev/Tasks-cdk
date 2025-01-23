@@ -60,7 +60,26 @@ class TasksCdkStack(Stack):
         create_task.role.attach_inline_policy(politica_lambda_access_ssm)
         create_task.role.attach_inline_policy(politica_lambda_access_dynamodb)
 
+        get_task = lambda_.Function(
+            self,
+            id="get_task_lambda",
+            description="Get tasks",
+            function_name='get_task',
+            runtime=lambda_.Runtime.PYTHON_3_8,
+            handler="get_task.lambda_handler",
+            code=lambda_.Code.from_asset("src/functions/get_task"),
+        )
+
+        get_task.role.attach_inline_policy(politica_lambda_access_ssm)
+        get_task.role.attach_inline_policy(politica_lambda_access_dynamodb)
+
         api_crud_tasks.root.add_resource('tasks').add_method('POST', 
             apigateway.LambdaIntegration(create_task),
             method_responses=[apigateway.MethodResponse(status_code="201")]
         )
+
+        api_crud_tasks.root.add_resource('tasks').add_resource('{taskId}').add_method('GET', 
+            apigateway.LambdaIntegration(create_task),
+            method_responses=[apigateway.MethodResponse(status_code="201")]
+        )
+

@@ -14,6 +14,9 @@ table = dynamodb.Table(table_name)
 def lambda_handler(event, context):
     print('EVENT', event)
     try:
+        if event['httpMethod'] != 'POST':
+            return generate_response(405, f'Method {event["httpMethod"]} not allowed')
+
         body = json.loads(event['body'])
         title = body['title']
         description = body['description']
