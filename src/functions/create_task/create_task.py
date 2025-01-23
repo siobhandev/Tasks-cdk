@@ -33,7 +33,7 @@ def lambda_handler(event, context):
 def create_item(title, description, status):
     response = table.put_item(
         Item={
-            'taskId': uuid.uuid4,
+            'taskId': uuid.uuid4(),
             'title': title,
             'description': description,
             'status': status
