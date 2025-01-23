@@ -22,25 +22,26 @@ def lambda_handler(event, context):
         if not title or not description or not status:
             return generate_response(400, 'Bad request')
 
-        response = create_item(title, description, status)
+        response, task_id = create_item(title, description, status)
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            generate_response(201, 'Created')
+            generate_response(201, {"taskId": task_id, "title": title, "description": description, "status": status})
 
     except Exception as e:
         return generate_response(500, f'Internal Server Error {e}')
 
 
 def create_item(title, description, status):
+    task_id = uuid.uuid4()
     response = table.put_item(
         Item={
-            'taskId': uuid.uuid4(),
+            'taskId': task_id,
             'title': title,
             'description': description,
             'status': status
         }
     )
 
-    return response
+    return response, task_id
 
 def generate_response(status_code, body):
     return {
