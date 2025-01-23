@@ -12,9 +12,9 @@ table_name = get_table_name()
 table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
+    print('EVENT', event)
     try:
         body = json.loads(event['body'])
-        
         title = body['title']
         description = body['description']
         status = body['status']
@@ -24,7 +24,7 @@ def lambda_handler(event, context):
 
         response, task_id = create_item(title, description, status)
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            generate_response(201, {"taskId": task_id, "title": title, "description": description, "status": status})
+            return generate_response(201, {"taskId": task_id, "title": title, "description": description, "status": status})
 
     except Exception as e:
         return generate_response(500, f'Internal Server Error {e}')
